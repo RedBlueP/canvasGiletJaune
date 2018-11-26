@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+
+<canvas id="myCanvas" width="1000" height="800" style="background: url(route.jpg) no-repeat center center; border:2px solid; background-size:cover;">
+    Votre navigateur ne supporte pas canvas.
+</canvas>
+
+<style>
+    canvas {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        background-color: #cccccc;
+        cursor: none;
+    }
+</style>
+<script type="text/javascript">
+window.onload = function()
+{
+    var canvas = document.getElementById("myCanvas");
+    if(!canvas)
+    {
+        alert("Impossible de récupérer le canvas");
+        return;
+    }
+    
+    var context = canvas.getContext("2d");
+    if(!context)
+    {
+        alert("Impossible de récupérer le context");
+        return;
+    }
+    context.font = "25px Arial";   
+
+    var giletjaune = new Image();
+        giletjaune.src = 'giletjaune.png';
+    
+    var polygon = new SAT.polygon(new SAT.giletjaune(sprite.x, sprite.y), [
+        new SAT.giletjaune(3, 21),
+        new SAT.giletjaune(13, 0),
+        new SAT.giletjaune(20, 0),
+        new SAT.giletjaune(30, 22),
+        new SAT.giletjaune(34, 39),
+        new SAT.giletjaune(32, 53),
+        new SAT.giletjaune(27, 58),
+        new SAT.giletjaune(7, 58),
+        new SAT.giletjaune(0, 50),
+        new SAT.giletjaune(0, 31)
+    ]);
+
+
+    var macron = new Image();
+        macron.src = 'macron2.png';
+
+    var polygon2 = new SAT.polygon(new SAT.macron(sprite.x, sprite.y), [
+        new SAT.macron(3, 25),
+        new SAT.macron(21, 2),
+        new SAT.macron(58, 2),
+        new SAT.macron(76, 43),
+        new SAT.macron(63, 105),
+        new SAT.macron(36, 103),
+        new SAT.macron(1, 68)
+    ]);
+
+    var co
+
+    
+
+    
+    function randomInt(int) {
+        return Math.floor(Math.random() * int) + 1;
+    }
+
+    var posX_Joueur = 0;
+    var posY_Joueur = 0;
+
+
+
+    window.addEventListener("mousemove", mouseMoveHandler, false);
+
+    function colisionCanvas(pos, giletjaune, canvasSize, vitesse) {
+        //On va vérifier si la balle à toucher l'un des bords du canvas.
+        if(pos+giletjaune >= canvasSize || pos <= giletjaune/2)//Si on touche le bord gauche ou droit
+        {
+            vitesse *= -1;//On inverse la vitesse de déplacement sur l'axe horizontal.
+        }
+        return vitesse;
+    }
+
+    function colision(posX_Joueur,posY_Joueur,posY, posX, polygon2, polygon){
+        /*
+        var bordDroit = posX_Joueur + macron / 2;
+        var bordGaucheEnnemy = posX[i] - giletjaune / 2;
+
+        var bordGauche = posX_Joueur - macron / 2;
+        var bordDroitEnnemy = posX[i] + giletjaune / 2;
+
+            if(bordDroit > bordGaucheEnnemy
+        && bordGauche < bordDroitEnnemy) {
+            //console.log("colision X");
+        }
+      
+        var bordHaut = posY_Joueur - macron / 2;
+        var bordBasEnnemy = posY[i] + giletjaune / 2;
+
+        var bordBas = posY_Joueur + macron / 2;
+        var bordHautEnnemy = posY[i] - giletjaune / 2;
+
+        if(bordHaut < bordBasEnnemy
+        && bordBas > bordHautEnnemy) {
+            //console.log("colision Y");
+        }*/
+
+        if(posX_Joueur + polygon2 / 2 > posX - polygon / 2
+        && posX_Joueur - polygon2 / 2 < posX+ polygon / 2
+        && posY_Joueur - polygon2 / 2 < posY + polygon / 2
+        && posY_Joueur + polygon2 / 2 > posY- polygon / 2) {
+            alert(scores)
+            scores = 0;
+        }
+        return scores;
+    }
+
+    function deplacement(pos, vitesse){
+        pos += vitesse;
+        return pos;
+    }
+
+    function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        var relativeY = e.clientY - canvas.offsetTop;
+        if(relativeX > 0 && relativeX < canvas.width) {
+            posX_Joueur=relativeX;
+        }
+        if(relativeY > 0 && relativeY < canvas.height) {
+            posY_Joueur=relativeY;
+        }
+    }
+
+
+
+    var max_ball = 13 - 1;
+    var scores = 0;
+
+    var posX = [];
+    var posY = [];
+    var vitesseX = [];
+    var vitesseY = [];
+    var couleur = "yellow";
+
+    for(i = 0; i <= max_ball; i++) {
+        posX[i] = 50+randomInt(500);
+        posY[i] = 50+randomInt(500);
+        vitesseX[i] = randomInt(7);
+        vitesseY[i] = randomInt(7);
+    }
+    
+
+    //var myInterval = setInterval(animate, 1000/30);
+    function animate()
+    {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        
+
+        context.fillStyle = "black";
+        context.fillText(scores, 0, 20);
+
+        context.beginPath();
+        context.drawImage(macron, posX_Joueur-(macron.width/2), posY_Joueur-(macron.height/2));
+        context.fill();
+
+        //Tracé de la balle
+        for(i = 0; i <= max_ball; i++) {
+            context.beginPath();
+            context.drawImage(giletjaune,posX[i]-(giletjaune.width/2), posY[i]-(giletjaune.height/2));
+            context.fill();
+            
+            scores = colision(posX_Joueur,posY_Joueur,posY[i], posX[i], polygon2, polygon);
+
+            vitesseX[i] = colisionCanvas(posX[i], giletjaune.width, canvas.width+25, vitesseX[i]);
+            vitesseY[i] = colisionCanvas(posY[i], giletjaune.height, canvas.height+25, vitesseY[i]);
+            
+            //On additionne les vitesses de déplacement avec les positions
+            posX[i] = deplacement(posX[i], vitesseX[i]);
+            posY[i] = deplacement(posY[i],vitesseY[i]);
+        }
+        scores += 1;
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+</script>
+
+</body>
+</html>
